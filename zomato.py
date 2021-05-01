@@ -381,6 +381,8 @@ def get_urls(locality_index):
             worksheet.write(cur_row, 7, rest_url)
             worksheet.write(cur_row, 8, img_url)
             cur_row += 1
+    
+    workbook.close()
 
         # rest_name = restaurant.find_element_by_xpath("./div/a[2]/p[1]").text
         # print("Consuming Time: 2", (datetime.now() - start_time).total_seconds())
@@ -414,7 +416,7 @@ def get_urls(locality_index):
 
 if sys.argv[1] == "url":
     get_urls(int(sys.argv[2]))    
-workbook.close()
+
 time.sleep(2000)
 
 # End of search results h3
