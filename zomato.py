@@ -1,4 +1,4 @@
-import csv, sys, time, xlsxwriter
+import sys, time, xlsxwriter
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -414,7 +414,6 @@ def get_urls(locality_index):
 
 if sys.argv[1] == "url":
     get_urls(int(sys.argv[2]))    
-print(popular_localities_url)
 workbook.close()
 time.sleep(2000)
 
