@@ -1,4 +1,4 @@
-import csv
+import csv, sys, time, xlsxwriter
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -7,9 +7,7 @@ from selenium.common.exceptions import TimeoutException
 from fake_useragent import UserAgent
 from selenium.webdriver.common.action_chains import ActionChains
 from os.path import join, dirname
-import time
 from datetime import datetime
-import xlsxwriter
 # from dotenv import load_dotenv
 
 
