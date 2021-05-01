@@ -376,7 +376,7 @@ def get_urls(locality_index):
             print("rest_url = ", rest_url)
             rest_urls.append(rest_url)
             img_urls.append(img_url)
-            worksheet.write(cur_row, 0, cur_row - 1)
+            worksheet.write(cur_row, 0, cur_row)
             worksheet.write(cur_row, 6, locality_name)
             worksheet.write(cur_row, 7, rest_url)
             worksheet.write(cur_row, 8, img_url)
