@@ -417,6 +417,4 @@ def get_urls(locality_index):
 if sys.argv[1] == "url":
     get_urls(int(sys.argv[2]))    
 
-time.sleep(2000)
-
 # End of search results h3
