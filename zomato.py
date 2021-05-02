@@ -55,6 +55,7 @@ class ZomatoThread(Thread):
                     conn.close()
                     del driver                    
                     details[self.cur_row] = {"rest_name": "", "rating": "", "commeters": "", "cuisine": "", "cost_alcohol": "", "cost": "", "address": "", "opening_hours": "", "company": ""}
+                    num_threads -= 1
                     return
                 time.sleep(0.1)
                 pass
