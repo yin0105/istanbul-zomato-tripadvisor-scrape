@@ -49,13 +49,13 @@ class ZomatoThread(Thread):
                 rest_name = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "//main/div/section[3]/section/section[1]/div/h1"))).text
                 break
             except:
-                if (datetime.now() - start_time).total_seconds() > time_limit:
+                if (datetime.now() - start_time).total_seconds() > time_limit:                                        
+                    details[self.cur_row] = {"rest_name": "", "rating": "", "commeters": "", "cuisine": "", "cost_alcohol": "", "cost": "", "address": "", "opening_hours": "", "company": ""}
+                    num_threads -= 1
                     conn = http.client.HTTPConnection(driver.service.service_url.split("//")[1])
                     conn.request("GET", "/shutdown")
                     conn.close()
-                    del driver                    
-                    details[self.cur_row] = {"rest_name": "", "rating": "", "commeters": "", "cuisine": "", "cost_alcohol": "", "cost": "", "address": "", "opening_hours": "", "company": ""}
-                    num_threads -= 1
+                    del driver
                     return
                 time.sleep(0.1)
                 pass
