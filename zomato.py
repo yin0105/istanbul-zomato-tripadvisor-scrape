@@ -256,7 +256,7 @@ def get_details(locality_name, start_row, time_interval):
 
     while True:
         print(len(details))
-        if len(details) == tatal_rows - start_row:
+        if len(details) == total_rows - start_row:
             for row in details:
                 ws.cell(row=row, column=2).value = details[row].rest_name
                 ws.cell(row=row, column=3).value = details[row].rating
