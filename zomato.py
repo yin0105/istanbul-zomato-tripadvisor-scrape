@@ -1,4 +1,4 @@
-import sys, time, xlsxwriter
+import sys, time, xlsxwriter, os, openpyxl
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -10,6 +10,7 @@ from os.path import join, dirname
 from datetime import datetime
 from openpyxl import load_workbook
 from threading import Thread
+from os.path import join, dirname, realpath
 # from dotenv import load_dotenv
 
 
@@ -255,7 +256,7 @@ def get_details(locality_name, start_row, time_interval):
 
     while True:
         print(len(details))
-        if len(details == tatal_rows - start_row) {
+        if len(details) == tatal_rows - start_row:
             for row in details:
                 ws.cell(row=row, column=2).value = details[row].rest_name
                 ws.cell(row=row, column=3).value = details[row].rating
@@ -267,8 +268,77 @@ def get_details(locality_name, start_row, time_interval):
                 ws.cell(row=row, column=9).value = details[row].company
                 ws.cell(row=row, column=10).value = details[row].opening_hours
 
-        }
         time.sleep(time_interval)
+
+
+def excel_merge():
+    xlsfile_name = "xls\\zomato\\total.xlsx"
+    # wb = load_workbook(xlsfile_name)
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    cur_row = 1
+
+    directory = join(dirname(realpath(__file__)), "xls", "zomato")
+    print("=##", directory, "##")
+    urls = []
+    for filename in os.listdir(directory):
+        if filename.endswith(".xlsx"): 
+            wb_2 = load_workbook(join(directory, filename))
+            ws_2 = wb_2.active
+            if cur_row == 1:
+                for c in range(1, 13):
+                    ws.cell(row=1, column=c).value = ws_2.cell(row=1, column=c).value
+                cur_row = 2
+            cur_row_2 = 2
+            while True:    
+                if ws_2.cell(row=cur_row_2, column=1).value == None: break
+                url = ws_2.cell(row=cur_row_2, column=12).value
+                if not url in urls:
+                    urls.append(url)
+
+                    ws.cell(row=cur_row, column=1).value = cur_row - 1
+                    for c in range(2, 13):
+                        ws.cell(row=cur_row, column=c).value = ws_2.cell(row=cur_row_2, column=c).value
+                    print(cur_row)
+                    cur_row = cur_row + 1
+
+                cur_row_2 += 1
+    wb.save(xlsfile_name)
+    wb.close()
+        
+    # total_rows = 2
+    # rest_urls = []
+    # while True:    
+    #     if ws.cell(row=total_rows, column=1).value == None: break
+    #     url = ws.cell(row=total_rows, column=12).value
+    #     rest_urls.append(url)
+    #     total_rows += 1
+    # total_rows -= 1
+    
+
+    # for i in range(start_row + 1, total_rows + 1):
+    #     t = ZomatoThread(locality_name, i, rest_urls[i - 2])
+    #     t.start()
+    #     time.sleep(time_interval)
+        
+    #     print(len(details))
+
+    # while True:
+    #     print(len(details))
+    #     if len(details == tatal_rows - start_row):
+    #         for row in details:
+    #             ws.cell(row=row, column=2).value = details[row].rest_name
+    #             ws.cell(row=row, column=3).value = details[row].rating
+    #             ws.cell(row=row, column=4).value = details[row].commeters
+    #             ws.cell(row=row, column=5).value = details[row].cuisine
+    #             ws.cell(row=row, column=6).value = details[row].cost_alcohol
+    #             ws.cell(row=row, column=7).value = details[row].cost
+    #             ws.cell(row=row, column=8).value = details[row].address
+    #             ws.cell(row=row, column=9).value = details[row].company
+    #             ws.cell(row=row, column=10).value = details[row].opening_hours
+
+    #     time.sleep(time_interval)
+
 
         # rest_name = restaurant.find_element_by_xpath("./div/a[2]/p[1]").text
         # print("Consuming Time: 2", (datetime.now() - start_time).total_seconds())
@@ -304,5 +374,7 @@ if sys.argv[1] == "url":
     get_urls(int(sys.argv[2]))   
 elif sys.argv[1] == "detail":
     get_details(sys.argv[2], int(sys.argv[3]), int(sys.argv[4]) )
+elif sys.argv[1] == "merge":
+    excel_merge()
 
 # End of search results h3
