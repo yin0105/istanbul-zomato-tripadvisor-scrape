@@ -102,7 +102,7 @@ class ZomatoThread(Thread):
         # ws.cell(row=self.cur_row, column=7).value = cost
         # ws.cell(row=self.cur_row, column=8).value = address
         # ws.cell(row=self.cur_row, column=10).value = opening_hours
-        details[self.cur_row] = {"rest_name": rest_name, "rating": rating, "comments": comments, "cuisine": cuisine, "cost_alcohol": cost_alcohol, "cost": cost, "address": address, "opening_hours": opening_hours, "company": company}
+        details[self.cur_row] = {"rest_name": rest_name, "rating": rating, "commeters": commeters, "cuisine": cuisine, "cost_alcohol": cost_alcohol, "cost": cost, "address": address, "opening_hours": opening_hours, "company": company}
         # wb.save(xlsfile_name)
         # wb.close()
         # print("wrote at row " + str(self.cur_row), "  :: address=", address, ", opening_hours=", opening_hours)
