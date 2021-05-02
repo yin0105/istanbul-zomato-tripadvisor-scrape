@@ -11,6 +11,7 @@ from datetime import datetime
 from openpyxl import load_workbook
 from threading import Thread
 from os.path import join, dirname, realpath
+import http.client
 # from dotenv import load_dotenv
 
 
@@ -49,10 +50,10 @@ class ZomatoThread(Thread):
                 break
             except:
                 if (datetime.now() - start_time).total_seconds() > time_limit:
-                    try:
-                        driver.quit()
-                    except:
-                        pass
+                    conn = http.client.HTTPConnection(driver.service.service_url.split("//")[1])
+                    conn.request("GET", "/shutdown")
+                    conn.close()
+                    del driver                    
                     details[self.cur_row] = {"rest_name": "", "rating": "", "commeters": "", "cuisine": "", "cost_alcohol": "", "cost": "", "address": "", "opening_hours": "", "company": ""}
                     return
                 time.sleep(0.1)
@@ -113,10 +114,10 @@ class ZomatoThread(Thread):
         # wb.save(xlsfile_name)
         # wb.close()
         # print("wrote at row " + str(self.cur_row), "  :: address=", address, ", opening_hours=", opening_hours)
-        try:
-            driver.quit()
-        except:
-            pass
+        conn = http.client.HTTPConnection(driver.service.service_url.split("//")[1])
+        conn.request("GET", "/shutdown")
+        conn.close()
+        del driver
         num_threads -= 1
 
 
