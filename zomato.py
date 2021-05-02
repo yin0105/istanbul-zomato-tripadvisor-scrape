@@ -299,7 +299,7 @@ def get_details(locality_name, start_row, end_row, time_interval):
             break
 
         print("completed = ", len(details), " number of threads = ", num_threads, " total = ", end_row - start_row)
-        for i in range(50):
+        for i in range(5):
             try:  
                 if keyboard.is_pressed(' '):  # if key 'q' is pressed 
                     print('You Pressed A Key!')
@@ -307,7 +307,7 @@ def get_details(locality_name, start_row, end_row, time_interval):
                     break
             except:
                 pass
-            time.sleep(time_interval / 50)
+            time.sleep(time_interval / 5)
         
 
 def excel_merge():
