@@ -23,8 +23,7 @@ class ZomatoThread(Thread):
         self.url = url
          
     def run(self):
-        global file_open_flag
-        global details
+        global details, num_threads
         start_time = datetime.now()
         ua = UserAgent()
         userAgent = ua.random
@@ -107,6 +106,7 @@ class ZomatoThread(Thread):
         # wb.close()
         # print("wrote at row " + str(self.cur_row), "  :: address=", address, ", opening_hours=", opening_hours)
         driver.quit()
+        num_threads -= 1
 
 
 def get_urls(locality_index):     
@@ -232,8 +232,8 @@ def get_urls(locality_index):
     
     workbook.close()
 
-def get_details(locality_name, start_row, time_interval):
-    global details
+def get_details(locality_name, start_row, end_row, time_interval):
+    global details, num_threads
     xlsfile_name = "xls\\zomato\\" + locality_name + ".xlsx"
     wb = load_workbook(xlsfile_name)
     ws = wb.active    
@@ -246,28 +246,35 @@ def get_details(locality_name, start_row, time_interval):
         total_rows += 1
     total_rows -= 1
     
+    if end_row == -1:
+        end_row = total_rows
+    else:
+        end_row += 1
 
-    for i in range(start_row + 1, total_rows + 1):
+    for i in range(start_row + 1, end_row + 1):
         t = ZomatoThread(locality_name, i, rest_urls[i - 2])
         t.start()
+        num_threads += 1
         time.sleep(time_interval)
         
-        print(len(details))
+        print("completed = ", len(details), " number of threads = ", num_threads, " total = ", end_row - start_row)
 
     while True:
-        print(len(details))
-        if len(details) == total_rows - start_row:
+        print("completed = ", len(details), " number of threads = ", num_threads, " total = ", end_row - start_row)
+        if len(details) == end_row - start_row:
             for row in details:
-                ws.cell(row=row, column=2).value = details[row].rest_name
-                ws.cell(row=row, column=3).value = details[row].rating
-                ws.cell(row=row, column=4).value = details[row].commeters
-                ws.cell(row=row, column=5).value = details[row].cuisine
-                ws.cell(row=row, column=6).value = details[row].cost_alcohol
-                ws.cell(row=row, column=7).value = details[row].cost
-                ws.cell(row=row, column=8).value = details[row].address
-                ws.cell(row=row, column=9).value = details[row].company
-                ws.cell(row=row, column=10).value = details[row].opening_hours
-
+                ws.cell(row=row, column=2).value = details[row]['rest_name']
+                ws.cell(row=row, column=3).value = details[row]['rating']
+                ws.cell(row=row, column=4).value = details[row]['commeters']
+                ws.cell(row=row, column=5).value = details[row]['cuisine']
+                ws.cell(row=row, column=6).value = details[row]['cost_alcohol']
+                ws.cell(row=row, column=7).value = details[row]['cost']
+                ws.cell(row=row, column=8).value = details[row]['address']
+                ws.cell(row=row, column=9).value = details[row]['company']
+                ws.cell(row=row, column=10).value = details[row]['opening_hours']
+            wb.save(xlsfile_name)
+            wb.close()
+            break
         time.sleep(time_interval)
 
 
@@ -369,11 +376,12 @@ def excel_merge():
 
 
 details = {}
+num_threads = 0
 file_open_flag = False
 if sys.argv[1] == "url":
     get_urls(int(sys.argv[2]))   
 elif sys.argv[1] == "detail":
-    get_details(sys.argv[2], int(sys.argv[3]), int(sys.argv[4]) )
+    get_details(sys.argv[2], int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]) )
 elif sys.argv[1] == "merge":
     excel_merge()
 
