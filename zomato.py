@@ -24,6 +24,7 @@ class ZomatoThread(Thread):
          
     def run(self):
         global details, num_threads
+        time_limit = 60
         start_time = datetime.now()
         ua = UserAgent()
         userAgent = ua.random
@@ -41,12 +42,15 @@ class ZomatoThread(Thread):
         driver = webdriver.Chrome (executable_path = path, options = chrome_options )
         # driver.maximize_window()
         driver.get(self.url)
-
+        
         while True:
             try:
                 rest_name = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "//main/div/section[3]/section/section[1]/div/h1"))).text
                 break
             except:
+                if (datetime.now() - start_time).total_seconds() > time_limit:
+                    driver.close()
+                    return
                 time.sleep(0.1)
                 pass
         
@@ -105,7 +109,7 @@ class ZomatoThread(Thread):
         # wb.save(xlsfile_name)
         # wb.close()
         # print("wrote at row " + str(self.cur_row), "  :: address=", address, ", opening_hours=", opening_hours)
-        driver.quit()
+        driver.close()
         num_threads -= 1
 
 
