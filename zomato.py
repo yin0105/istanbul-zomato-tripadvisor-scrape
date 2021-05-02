@@ -23,6 +23,7 @@ class ZomatoThread(Thread):
          
     def run(self):
         global file_open_flag
+        global details
         start_time = datetime.now()
         ua = UserAgent()
         userAgent = ua.random
@@ -48,6 +49,8 @@ class ZomatoThread(Thread):
             except:
                 time.sleep(0.1)
                 pass
+        
+        company = driver.find_element_by_xpath("//main/div/section[3]/section/section[1]/section[1]/a").text
         rating = ''
         commeters = ''
         try:
@@ -87,29 +90,22 @@ class ZomatoThread(Thread):
                 opening_hours = driver.find_element_by_xpath("//span[contains(text(), 'Open')]/following-sibling::span[1]").text
             except:
                 pass
-        # while True:
-        #     if file_open_flag:
-        #         time.sleep(1)
-        #         continue
-
-            # file_open_flag = True
-        xlsfile_name = "xls\\zomato\\" + self.locality_name + ".xlsx"
-        wb = load_workbook(xlsfile_name)
-        ws = wb.active
-        ws.cell(row=self.cur_row, column=2).value = rest_name
-        ws.cell(row=self.cur_row, column=3).value = rating
-        ws.cell(row=self.cur_row, column=4).value = commeters
-        ws.cell(row=self.cur_row, column=5).value = cuisine
-        ws.cell(row=self.cur_row, column=6).value = cost_alcohol
-        ws.cell(row=self.cur_row, column=7).value = cost
-        ws.cell(row=self.cur_row, column=8).value = address
-        ws.cell(row=self.cur_row, column=10).value = opening_hours        
-        wb.save(xlsfile_name)
-        wb.close()
-        print("wrote at row " + str(self.cur_row), "  :: address=", address, ", opening_hours=", opening_hours)
+        # xlsfile_name = "xls\\zomato\\" + self.locality_name + ".xlsx"
+        # wb = load_workbook(xlsfile_name)
+        # ws = wb.active
+        # ws.cell(row=self.cur_row, column=2).value = rest_name
+        # ws.cell(row=self.cur_row, column=3).value = rating
+        # ws.cell(row=self.cur_row, column=4).value = commeters
+        # ws.cell(row=self.cur_row, column=5).value = cuisine
+        # ws.cell(row=self.cur_row, column=6).value = cost_alcohol
+        # ws.cell(row=self.cur_row, column=7).value = cost
+        # ws.cell(row=self.cur_row, column=8).value = address
+        # ws.cell(row=self.cur_row, column=10).value = opening_hours
+        details[self.cur_row] = {"rest_name": rest_name, "rating": rating, "comments": comments, "cuisine": cuisine, "cost_alcohol": cost_alcohol, "cost": cost, "address": address, "opening_hours": opening_hours, "company": company}
+        # wb.save(xlsfile_name)
+        # wb.close()
+        # print("wrote at row " + str(self.cur_row), "  :: address=", address, ", opening_hours=", opening_hours)
         driver.quit()
-            # file_open_flag = False
-            # break
 
 
 def get_urls(locality_index):     
@@ -236,6 +232,7 @@ def get_urls(locality_index):
     workbook.close()
 
 def get_details(locality_name, start_row, time_interval):
+    global details
     xlsfile_name = "xls\\zomato\\" + locality_name + ".xlsx"
     wb = load_workbook(xlsfile_name)
     ws = wb.active    
@@ -247,11 +244,30 @@ def get_details(locality_name, start_row, time_interval):
         rest_urls.append(url)
         total_rows += 1
     total_rows -= 1
-    wb.close()
+    
 
     for i in range(start_row + 1, total_rows + 1):
         t = ZomatoThread(locality_name, i, rest_urls[i - 2])
         t.start()
+        time.sleep(time_interval)
+        
+        print(len(details))
+
+    while True:
+        print(len(details))
+        if len(details == tatal_rows - start_row) {
+            for row in details:
+                ws.cell(row=row, column=2).value = details[row].rest_name
+                ws.cell(row=row, column=3).value = details[row].rating
+                ws.cell(row=row, column=4).value = details[row].commeters
+                ws.cell(row=row, column=5).value = details[row].cuisine
+                ws.cell(row=row, column=6).value = details[row].cost_alcohol
+                ws.cell(row=row, column=7).value = details[row].cost
+                ws.cell(row=row, column=8).value = details[row].address
+                ws.cell(row=row, column=9).value = details[row].company
+                ws.cell(row=row, column=10).value = details[row].opening_hours
+
+        }
         time.sleep(time_interval)
 
         # rest_name = restaurant.find_element_by_xpath("./div/a[2]/p[1]").text
@@ -282,7 +298,7 @@ def get_details(locality_name, start_row, time_interval):
     
 
 
-
+details = {}
 file_open_flag = False
 if sys.argv[1] == "url":
     get_urls(int(sys.argv[2]))   
