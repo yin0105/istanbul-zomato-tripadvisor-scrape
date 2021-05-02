@@ -87,29 +87,29 @@ class ZomatoThread(Thread):
                 opening_hours = driver.find_element_by_xpath("//span[contains(text(), 'Open')]/following-sibling::span[1]").text
             except:
                 pass
-        while True:
-            if file_open_flag:
-                time.sleep(0.1)
-                continue
+        # while True:
+        #     if file_open_flag:
+        #         time.sleep(1)
+        #         continue
 
-            file_open_flag = True
-            xlsfile_name = "xls\\zomato\\" + self.locality_name + ".xlsx"
-            wb = load_workbook(xlsfile_name)
-            ws = wb.active
-            ws.cell(row=self.cur_row, column=2).value = rest_name
-            ws.cell(row=self.cur_row, column=3).value = rating
-            ws.cell(row=self.cur_row, column=4).value = commeters
-            ws.cell(row=self.cur_row, column=5).value = cuisine
-            ws.cell(row=self.cur_row, column=6).value = cost_alcohol
-            ws.cell(row=self.cur_row, column=7).value = cost
-            ws.cell(row=self.cur_row, column=8).value = address
-            ws.cell(row=self.cur_row, column=10).value = opening_hours        
-            wb.save(xlsfile_name)
-            wb.close()
-            print("wrote at row " + str(self.cur_row), "  :: address=", address, ", opening_hours=", opening_hours)
-            driver.quit()
-            file_open_flag = False
-            break
+            # file_open_flag = True
+        xlsfile_name = "xls\\zomato\\" + self.locality_name + ".xlsx"
+        wb = load_workbook(xlsfile_name)
+        ws = wb.active
+        ws.cell(row=self.cur_row, column=2).value = rest_name
+        ws.cell(row=self.cur_row, column=3).value = rating
+        ws.cell(row=self.cur_row, column=4).value = commeters
+        ws.cell(row=self.cur_row, column=5).value = cuisine
+        ws.cell(row=self.cur_row, column=6).value = cost_alcohol
+        ws.cell(row=self.cur_row, column=7).value = cost
+        ws.cell(row=self.cur_row, column=8).value = address
+        ws.cell(row=self.cur_row, column=10).value = opening_hours        
+        wb.save(xlsfile_name)
+        wb.close()
+        print("wrote at row " + str(self.cur_row), "  :: address=", address, ", opening_hours=", opening_hours)
+        driver.quit()
+            # file_open_flag = False
+            # break
 
 
 def get_urls(locality_index):     
@@ -173,7 +173,7 @@ def get_urls(locality_index):
     img_urls = []
     count = 0
     
-    driver.get(locality_url + "?sort=cd&category=2")
+    driver.get(locality_url) # + "?sort=cd&category=2")
     print("go to new page '" + locality_url + "'")
     # while True:
     #     try:
