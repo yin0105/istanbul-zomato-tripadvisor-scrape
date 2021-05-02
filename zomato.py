@@ -271,16 +271,17 @@ def get_details(locality_name, start_row, end_row, time_interval):
         num_threads += 1
         
         print("completed = ", len(details), " number of threads = ", num_threads, " total = ", end_row - start_row)
-        for i in range(5):
-            try:  
-                if keyboard.is_pressed(' '):  # if key 'q' is pressed 
-                    print('You Pressed A Key!')
-                    breaked = True
-                    break
-            except:
-                pass
-            time.sleep(time_interval / 5)
-        if breaked: break
+        time.sleep(time_interval)
+        # for i in range(5):
+        #     try:  
+        #         if keyboard.is_pressed(' '):  # if key 'q' is pressed 
+        #             print('You Pressed A Key!')
+        #             breaked = True
+        #             break
+        #     except:
+        #         pass
+        #     time.sleep(time_interval / 5)
+        # if breaked: break
 
     while True:
         if breaked or len(details) == end_row - start_row:
