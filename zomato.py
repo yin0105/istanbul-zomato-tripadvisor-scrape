@@ -1,4 +1,4 @@
-import sys, time, xlsxwriter, os, openpyxl
+import sys, time, xlsxwriter, os, openpyxl, keyboard
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -12,14 +12,7 @@ from openpyxl import load_workbook
 from threading import Thread
 from os.path import join, dirname, realpath
 import http.client
-from pynput.keyboard import Listener, Key
 # from dotenv import load_dotenv
-
-
-def on_press(key):
-    global number_space
-    if key == Key.space: 
-        number_space += 1
 
 
 class ZomatoThread(Thread):
@@ -253,7 +246,8 @@ def get_urls(locality_index):
     workbook.close()
 
 def get_details(locality_name, start_row, end_row, time_interval):
-    global details, num_threads, number_space
+    global details, num_threads
+    breaked = False
     xlsfile_name = "xls\\zomato\\" + locality_name + ".xlsx"
     wb = load_workbook(xlsfile_name)
     ws = wb.active    
@@ -275,13 +269,21 @@ def get_details(locality_name, start_row, end_row, time_interval):
         t = ZomatoThread(locality_name, i, rest_urls[i - 2])
         t.start()
         num_threads += 1
-        time.sleep(time_interval)
         
         print("completed = ", len(details), " number of threads = ", num_threads, " total = ", end_row - start_row)
+        for i in range(5):
+            try:  
+                if keyboard.is_pressed(' '):  # if key 'q' is pressed 
+                    print('You Pressed A Key!')
+                    breaked = True
+                    break
+            except:
+                pass
+            time.sleep(time_interval / 5)
+        if breaked: break
 
     while True:
-        print("completed = ", len(details), " number of threads = ", num_threads, " total = ", end_row - start_row)
-        if number_space > 1 or len(details) == end_row - start_row:
+        if breaked or len(details) == end_row - start_row:
             for row in details:
                 ws.cell(row=row, column=2).value = details[row]['rest_name']
                 ws.cell(row=row, column=3).value = details[row]['rating']
@@ -295,9 +297,18 @@ def get_details(locality_name, start_row, end_row, time_interval):
             wb.save(xlsfile_name)
             wb.close()
             break
-        time.sleep(time_interval)
-        number_space = 0
 
+        print("completed = ", len(details), " number of threads = ", num_threads, " total = ", end_row - start_row)
+        for i in range(50):
+            try:  
+                if keyboard.is_pressed(' '):  # if key 'q' is pressed 
+                    print('You Pressed A Key!')
+                    breaked = True
+                    break
+            except:
+                pass
+            time.sleep(time_interval / 50)
+        
 
 def excel_merge():
     xlsfile_name = "xls\\zomato\\total.xlsx"
@@ -393,14 +404,9 @@ def excel_merge():
 
     # for rest_url, img_url in zip(rest_urls, img_urls):
            
-    
-
-with Listener(on_press=on_press) as listener:  # Setup the listener
-    listener.join()  # Join the thread to the main thread
 
 details = {}
 num_threads = 0
-number_space = 0
 file_open_flag = False
 
 if sys.argv[1] == "url":
