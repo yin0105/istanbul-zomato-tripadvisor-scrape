@@ -12,7 +12,14 @@ from openpyxl import load_workbook
 from threading import Thread
 from os.path import join, dirname, realpath
 import http.client
+from pynput.keyboard import Listener, Key
 # from dotenv import load_dotenv
+
+
+def on_press(key):
+    global number_space
+    if key == Key.space: 
+        number_space += 1
 
 
 class ZomatoThread(Thread):
@@ -246,7 +253,7 @@ def get_urls(locality_index):
     workbook.close()
 
 def get_details(locality_name, start_row, end_row, time_interval):
-    global details, num_threads
+    global details, num_threads, number_space
     xlsfile_name = "xls\\zomato\\" + locality_name + ".xlsx"
     wb = load_workbook(xlsfile_name)
     ws = wb.active    
@@ -274,7 +281,7 @@ def get_details(locality_name, start_row, end_row, time_interval):
 
     while True:
         print("completed = ", len(details), " number of threads = ", num_threads, " total = ", end_row - start_row)
-        if len(details) == end_row - start_row:
+        if number_space > 1 or len(details) == end_row - start_row:
             for row in details:
                 ws.cell(row=row, column=2).value = details[row]['rest_name']
                 ws.cell(row=row, column=3).value = details[row]['rating']
@@ -289,6 +296,7 @@ def get_details(locality_name, start_row, end_row, time_interval):
             wb.close()
             break
         time.sleep(time_interval)
+        number_space = 0
 
 
 def excel_merge():
@@ -387,10 +395,14 @@ def excel_merge():
            
     
 
+with Listener(on_press=on_press) as listener:  # Setup the listener
+    listener.join()  # Join the thread to the main thread
 
 details = {}
 num_threads = 0
+number_space = 0
 file_open_flag = False
+
 if sys.argv[1] == "url":
     get_urls(int(sys.argv[2]))   
 elif sys.argv[1] == "detail":
