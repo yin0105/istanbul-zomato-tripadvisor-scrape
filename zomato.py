@@ -49,7 +49,11 @@ class ZomatoThread(Thread):
                 break
             except:
                 if (datetime.now() - start_time).total_seconds() > time_limit:
-                    driver.close()
+                    try:
+                        driver.quit()
+                    except:
+                        pass
+                    details[self.cur_row] = {"rest_name": "", "rating": "", "commeters": "", "cuisine": "", "cost_alcohol": "", "cost": "", "address": "", "opening_hours": "", "company": ""}
                     return
                 time.sleep(0.1)
                 pass
@@ -109,7 +113,10 @@ class ZomatoThread(Thread):
         # wb.save(xlsfile_name)
         # wb.close()
         # print("wrote at row " + str(self.cur_row), "  :: address=", address, ", opening_hours=", opening_hours)
-        driver.close()
+        try:
+            driver.quit()
+        except:
+            pass
         num_threads -= 1
 
 
